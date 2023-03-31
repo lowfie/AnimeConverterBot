@@ -1,12 +1,14 @@
-TOKEN = "5831563235:AAHD_dXqWfrE2UuVvzw9unLPlNYwxJI4e3s"
+from environs import Env
 
-JOIN_CHAT_TEXT = "Добро пожаловать в канал"
-SECOND_JOIN_CHAT_TEXT = ""
+env = Env()
+env.read_env()
 
+TOKEN = env.str("TOKEN")
 
-# format {"title": "", "chat_id": , "invited_link": ""}
+JOIN_CHAT_TEXT = env.str("JOIN_CHAT_TEXT")
+JOIN_CHAT_FILE_ID = env.str("JOIN_CHAT_ANIMATION")
 
 chats = [
-
+    # format {"title": "", "chat_id": , "invited_link": ""}
 ]
 
