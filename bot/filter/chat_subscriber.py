@@ -1,8 +1,10 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
+from sqlalchemy import select
 
 from bot.base import bot
-from config import chats
+from database.base import session
+from database.models import Subscribe
 
 
 class IsSubscriber(Filter):
@@ -10,10 +12,9 @@ class IsSubscriber(Filter):
         is_subs = True
         keyboard = types.InlineKeyboardMarkup()
 
-        for channel in chats:
-            text = channel["title"]
-            chat_id = channel["chat_id"]
-            invited_link = channel["invited_link"]
+        chats_db = (session.execute(select(Subscribe.chat_id, Subscribe.title, Subscribe.invited_link))).all()
+        for channel in chats_db:
+            chat_id, text, invited_link = channel
 
             try:
                 chat_member = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
