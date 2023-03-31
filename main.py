@@ -4,9 +4,9 @@ from bot.base import dp
 
 
 async def on_startup(dispatcher):
-    from bot.handler import start, shout, converter, chat_join, subscriber, stats, bot_blocked
     from database.base import create_database_if_not_exists
     await create_database_if_not_exists()
+    from bot.handler import start, shout, converter, chat_join, subscriber, stats, bot_blocked
     print("bot was started")
 
 
