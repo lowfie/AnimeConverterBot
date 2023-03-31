@@ -1,6 +1,5 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
-from aiogram.utils.exceptions import ChatNotFound
 
 from bot.base import bot
 from config import chats
@@ -18,8 +17,8 @@ class IsSubscriber(Filter):
 
             try:
                 chat_member = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
-            except ChatNotFound:
-                print("Неправильный ID чата, либо вы не добавили бота в чат")
+            except Exception as _ex:
+                print("WARNING:", _ex)
                 return
 
             if chat_member.status == types.ChatMemberStatus.LEFT:
