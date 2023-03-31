@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean, BigInteger
 
 
 Base = declarative_base()
@@ -11,3 +11,10 @@ class Subscribe(Base):
     title = Column(String, default="Button")
     chat_id = Column(String, nullable=False)
     invited_link = Column(String, nullable=False)
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, nullable=False)
+    tg_id = Column(BigInteger, unique=True)
+    is_life = Column(Boolean, default=True)
