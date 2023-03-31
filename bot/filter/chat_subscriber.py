@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
+from aiogram.utils.exceptions import ChatNotFound
 
 from bot.base import bot
 from config import chats
@@ -14,7 +15,12 @@ class IsSubscriber(Filter):
             text = channel["title"]
             chat_id = channel["chat_id"]
             invited_link = channel["invited_link"]
-            chat_member = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
+
+            try:
+                chat_member = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
+            except ChatNotFound:
+                print("Неправильный ID чата, либо вы не добавили бота в чат")
+                return
 
             if chat_member.status == types.ChatMemberStatus.LEFT:
                 sub_channel_button = types.InlineKeyboardButton(text=text, url=invited_link)
