@@ -1,10 +1,47 @@
 import requests
 import json
 
+from aiogram import types
+from aiogram import Bot
+
 
 async def anti_flood(*args, **kwargs):
     message = args[0]
     await message.answer("Не флуди, я тебя с первого раза понял!")
+
+
+async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: str, file_id: str = None):
+    if content_type == "text":
+        await bot.send_message(
+            chat_id,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=types.ReplyKeyboardRemove()
+        )
+    elif content_type == "photo":
+        await bot.send_photo(
+            chat_id,
+            photo=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=types.ReplyKeyboardRemove()
+        )
+    elif content_type == "video":
+        await bot.send_video(
+            chat_id,
+            video=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=types.ReplyKeyboardRemove()
+        )
+    elif content_type == "animation":
+        await bot.send_animation(
+            chat_id,
+            animation=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=types.ReplyKeyboardRemove()
+        )
 
 
 def get_ai_image(base64_image_string):
