@@ -8,7 +8,12 @@ from datetime import datetime, timedelta
 from bot.base import dp, bot
 from bot.filter.admin import IsAdmin
 from bot.utils import send_message_media_types
-from database.service import init_join_chat_message, update_join_chat_message, select_join_chat_message
+from database.service import (
+    init_join_chat_message,
+    update_join_chat_message,
+    select_join_chat_message,
+    add_user
+)
 
 
 class Form(StatesGroup):
@@ -73,6 +78,7 @@ async def approve_member(chat_join: types.ChatJoinRequest):
     join_msg_content_type, join_msg_text, join_msg_file_id = await select_join_chat_message("join_chat")
     after_msg_content_type, after_msg_text, after_msg_file_id = await select_join_chat_message("after_join")
 
+    await add_user(chat_join.from_user.id)
     await send_message_media_types(
         bot=bot,
         content_type=join_msg_content_type,
