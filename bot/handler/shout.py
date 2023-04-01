@@ -24,7 +24,7 @@ async def cmd_shout(message: types.Message):
     await message.reply("Отправь текст рассылки")
 
 
-@dp.message_handler(state=Form.text)
+@dp.message_handler(content_types=["text"], state=Form.text)
 async def process_text(message: types.Message, state: FSMContext):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("Вернуться к боту")
