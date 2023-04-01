@@ -5,6 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from sqlalchemy import select
 
 from bot.base import bot, dp
+from bot.filter.admin import IsAdmin
 from database.base import session
 from database.models import User
 
@@ -12,16 +13,15 @@ from database.models import User
 users = (session.execute(select(User.tg_id).where(User.is_life.__eq__(True)))).all()
 
 
-# States
 class Form(StatesGroup):
     text = State()
     media = State()
 
 
-@dp.message_handler(commands="shout")
+@dp.message_handler(IsAdmin(), commands="shout")
 async def cmd_shout(message: types.Message):
     await Form.text.set()
-    await message.reply("Отправь текст рассылки (HTML формат)")
+    await message.reply("Отправь текст рассылки")
 
 
 @dp.message_handler(state=Form.text)
@@ -71,13 +71,3 @@ async def process_text(message: types.Message, state: FSMContext):
                     parse_mode="HTML"
                 )
     await bot.send_message(message.from_user.id, "Все сообщения были успешно отправлены")
-
-
-@dp.message_handler(state="*", commands="cancel")
-@dp.message_handler(Text(equals="вернуться к боту", ignore_case=True), state="*")
-async def cancel_handler(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    await state.finish()
-    await message.reply("Отменено", reply_markup=types.ReplyKeyboardRemove())
