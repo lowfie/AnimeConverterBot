@@ -29,7 +29,7 @@ async def init_join_chat_message(text_type: str):
         session.commit()
 
 
-async def update_join_chat_message(text_type: str, content_type: str, text: str, file_id: str | None):
+async def update_join_chat_message(text_type: str, content_type: str, text: str, file_id):
     session.execute(
         update(JoinChatMessage)
         .values(
