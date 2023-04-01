@@ -18,3 +18,13 @@ class User(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     tg_id = Column(BigInteger, unique=True)
     is_life = Column(Boolean, default=True)
+
+
+class JoinChatMessage(Base):
+    __tablename__ = 'join_chat'
+    id = Column(Integer, primary_key=True, nullable=False)
+    text_type = Column(String, nullable=False)
+    content_type = Column(String, nullable=False, default="text")
+    text = Column(String, nullable=False, default="Some Text")
+    file_id = Column(String, nullable=True)
+
