@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
 
-from config import ADMINS
+from settings.config import ADMINS
 
 
 class IsAdmin(Filter):
