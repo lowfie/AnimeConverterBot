@@ -1,15 +1,13 @@
 import base64
 import requests
 
-from config import TOKEN
+from settings.config import TOKEN
 from bot.base import dp, bot
 from bot.utils import anti_flood, get_ai_image
-from bot.filter.chat_subscriber import IsSubscriber
 
 
-@dp.message_handler(IsSubscriber(), content_types=["photo"])
 @dp.throttled(anti_flood, rate=0.5)
-async def get_photo(message):
+async def send_anime_photo(message):
     await bot.send_message(message.from_user.id, "🤖Нейросеть конвертирует фото")
 
     # Получаем ID фоторгафии
