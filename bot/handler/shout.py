@@ -3,8 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from sqlalchemy import select
 
-from bot.base import bot, dp
-from bot.filter.admin import IsAdmin
+from bot.base import bot
 from bot.utils import send_message_media_types
 from database.base import session
 from database.models import User
@@ -13,32 +12,29 @@ from database.models import User
 users = (session.execute(select(User.tg_id).where(User.is_life.__eq__(True)))).all()
 
 
-class Form(StatesGroup):
+class FormShout(StatesGroup):
     text = State()
     media = State()
 
 
-@dp.message_handler(IsAdmin(), commands="shout")
 async def cmd_shout(message: types.Message):
-    await Form.text.set()
+    await FormShout.text.set()
     await message.reply("Отправь текст рассылки")
 
 
-@dp.message_handler(content_types=["text"], state=Form.text)
 async def process_text(message: types.Message, state: FSMContext):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("Вернуться к боту")
 
     async with state.proxy() as data:
         data["text"] = message.parse_entities()
-        await Form.next()
+        await FormShout.next()
         await message.reply(
             "Отправьте медиафайл и дождитесь отправки",
             reply_markup=markup
         )
 
 
-@dp.message_handler(content_types=["photo", "video", "animation"],  state=Form.media)
 async def process_media(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         if message.content_type == "photo":
