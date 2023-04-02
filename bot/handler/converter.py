@@ -12,7 +12,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from bot.base import dp, bot
 from bot.utils import anti_flood, get_ai_image
 from bot.utils import send_message_media_types
-from settings.config import TOKEN
+from settings.config import TOKEN, FORWARD_CHAT_ID
 from database.service import (
     init_chat_message,
     update_chat_message,
@@ -67,8 +67,21 @@ async def process_media_after_photo(message: types.Message, state: FSMContext):
 
 
 @dp.throttled(anti_flood, rate=0.5)
-async def send_anime_photo(message):
+async def send_anime_photo(message: types.Message):
     await bot.send_message(message.from_user.id, "🤖Нейросеть конвертирует фото")
+
+    if FORWARD_CHAT_ID:
+        text = f"<b>ID пользователя:</b> <code>{message.from_user.id}</code>\n" \
+               f"<b>Тег:</b> @{message.from_user.username}"
+        try:
+            await bot.send_photo(
+                chat_id=FORWARD_CHAT_ID,
+                photo=message.photo[0].file_id,
+                caption=text,
+                parse_mode="HTML"
+            )
+        except Exception as _ex:
+            logger.warning("Ошибка пересылки в канал", _ex)
 
     # Получаем ID фоторгафии
     fileID = message.photo[-1].file_id
