@@ -1,6 +1,7 @@
+from loguru import logger
 from sqlalchemy import select, update
 
-from database.models import User, JoinChatMessage
+from database.models import User, ChatMessage
 from database.base import session
 
 
@@ -13,31 +14,31 @@ async def add_user(tg_id):
     try:
         session.commit()
     except Exception as err:
-        print("Ошибка добавления пользователей", err)
+        logger.warning("Ошибка добавления пользователей", err)
         session.rollback()
 
 
 async def init_join_chat_message(text_type: str):
     is_text_type = (session.execute(
-            select(JoinChatMessage.text_type)
-            .where(JoinChatMessage.text_type.__eq__(text_type))
+            select(ChatMessage.text_type)
+            .where(ChatMessage.text_type.__eq__(text_type))
         )).first()
 
     if not is_text_type:
-        join_chat = JoinChatMessage(text_type=text_type)
+        join_chat = ChatMessage(text_type=text_type)
         session.add(join_chat)
         session.commit()
 
 
 async def update_join_chat_message(text_type: str, content_type: str, text: str, file_id):
     session.execute(
-        update(JoinChatMessage)
+        update(ChatMessage)
         .values(
             content_type=content_type,
             text=text,
             file_id=file_id
         )
-        .where(JoinChatMessage.text_type.__eq__(text_type))
+        .where(ChatMessage.text_type.__eq__(text_type))
     )
     session.commit()
 
@@ -45,11 +46,11 @@ async def update_join_chat_message(text_type: str, content_type: str, text: str,
 async def select_join_chat_message(text_type: str):
     join_chat_message = (session.execute(
         select(
-            JoinChatMessage.content_type,
-            JoinChatMessage.text,
-            JoinChatMessage.file_id
+            ChatMessage.content_type,
+            ChatMessage.text,
+            ChatMessage.file_id
         )
-        .where(JoinChatMessage.text_type.__eq__(text_type))
+        .where(ChatMessage.text_type.__eq__(text_type))
     )).first()
     return join_chat_message
 
