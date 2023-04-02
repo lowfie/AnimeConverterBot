@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 from bot.base import bot
 from bot.utils import send_message_media_types
 from database.service import (
-    init_join_chat_message,
-    update_join_chat_message,
-    select_join_chat_message,
+    init_chat_message,
+    update_chat_message,
+    select_chat_message,
     add_user
 )
 
@@ -20,7 +20,7 @@ class FormJoinMessage(StatesGroup):
 
 
 async def text_join_to_chat(message: types.Message, state: FSMContext = None):
-    await init_join_chat_message("join_chat")
+    await init_chat_message("join_chat")
     await FormJoinMessage.message.set()
     async with state.proxy() as data:
         data["text_type"] = "join_chat"
@@ -28,38 +28,38 @@ async def text_join_to_chat(message: types.Message, state: FSMContext = None):
 
 
 async def text_after_join_chat(message: types.Message, state: FSMContext = None):
-    await init_join_chat_message("after_join")
+    await init_chat_message("after_join")
     await FormJoinMessage.message.set()
     async with state.proxy() as data:
         data["text_type"] = "after_join"
     await message.reply("Отправь сообщение уведомления при входе после 15 минут (с медиафайлом)")
 
 
-async def process_message(message: types.Message, state: FSMContext):
+async def process_media_join_chat(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         if message.content_type == "text":
-            await update_join_chat_message(
+            await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
                 file_id=None
             )
         elif message.content_type == "photo":
-            await update_join_chat_message(
+            await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
                 file_id=message.photo[0].file_id
             )
         elif message.content_type == "video":
-            await update_join_chat_message(
+            await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
                 file_id=message.video.file_id
             )
         elif message.content_type == "animation":
-            await update_join_chat_message(
+            await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
@@ -70,8 +70,8 @@ async def process_message(message: types.Message, state: FSMContext):
 
 
 async def approve_member(chat_join: types.ChatJoinRequest):
-    join_msg_content_type, join_msg_text, join_msg_file_id = await select_join_chat_message("join_chat")
-    after_msg_content_type, after_msg_text, after_msg_file_id = await select_join_chat_message("after_join")
+    join_msg_content_type, join_msg_text, join_msg_file_id = await select_chat_message("join_chat")
+    after_msg_content_type, after_msg_text, after_msg_file_id = await select_chat_message("after_join")
 
     await add_user(chat_join.from_user.id)
     await send_message_media_types(

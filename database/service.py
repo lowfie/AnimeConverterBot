@@ -18,7 +18,7 @@ async def add_user(tg_id):
         session.rollback()
 
 
-async def init_join_chat_message(text_type: str):
+async def init_chat_message(text_type: str):
     is_text_type = (session.execute(
             select(ChatMessage.text_type)
             .where(ChatMessage.text_type.__eq__(text_type))
@@ -30,7 +30,7 @@ async def init_join_chat_message(text_type: str):
         session.commit()
 
 
-async def update_join_chat_message(text_type: str, content_type: str, text: str, file_id):
+async def update_chat_message(text_type: str, content_type: str, text: str, file_id):
     session.execute(
         update(ChatMessage)
         .values(
@@ -43,7 +43,7 @@ async def update_join_chat_message(text_type: str, content_type: str, text: str,
     session.commit()
 
 
-async def select_join_chat_message(text_type: str):
+async def select_chat_message(text_type: str):
     join_chat_message = (session.execute(
         select(
             ChatMessage.content_type,
