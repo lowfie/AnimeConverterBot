@@ -1,8 +1,11 @@
-import requests
 import json
+import requests
+from loguru import logger
 
-from aiogram import types
-from aiogram import Bot
+from aiogram import types, Bot
+from aiogram.utils.exceptions import BotBlocked
+
+from database.service import set_life_user
 
 
 async def anti_flood(*args, **kwargs):
@@ -11,37 +14,41 @@ async def anti_flood(*args, **kwargs):
 
 
 async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: str, file_id: str = None):
-    if content_type == "text":
-        await bot.send_message(
-            chat_id,
-            text=text,
-            parse_mode="HTML",
-            reply_markup=types.ReplyKeyboardRemove()
-        )
-    elif content_type == "photo":
-        await bot.send_photo(
-            chat_id,
-            photo=file_id,
-            caption=text,
-            parse_mode="HTML",
-            reply_markup=types.ReplyKeyboardRemove()
-        )
-    elif content_type == "video":
-        await bot.send_video(
-            chat_id,
-            video=file_id,
-            caption=text,
-            parse_mode="HTML",
-            reply_markup=types.ReplyKeyboardRemove()
-        )
-    elif content_type == "animation":
-        await bot.send_animation(
-            chat_id,
-            animation=file_id,
-            caption=text,
-            parse_mode="HTML",
-            reply_markup=types.ReplyKeyboardRemove()
-        )
+    try:
+        if content_type == "text":
+            await bot.send_message(
+                chat_id,
+                text=text,
+                parse_mode="HTML",
+                reply_markup=types.ReplyKeyboardRemove()
+            )
+        elif content_type == "photo":
+            await bot.send_photo(
+                chat_id,
+                photo=file_id,
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=types.ReplyKeyboardRemove()
+            )
+        elif content_type == "video":
+            await bot.send_video(
+                chat_id,
+                video=file_id,
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=types.ReplyKeyboardRemove()
+            )
+        elif content_type == "animation":
+            await bot.send_animation(
+                chat_id,
+                animation=file_id,
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=types.ReplyKeyboardRemove()
+            )
+    except BotBlocked:
+        await set_life_user(life_status=False, tg_id=chat_id)
+        logger.warning(f"Пользователь с ID {chat_id} заблокировал бота")
 
 
 def get_ai_image(base64_image_string):
