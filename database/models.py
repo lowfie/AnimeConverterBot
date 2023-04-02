@@ -20,8 +20,8 @@ class User(Base):
     is_life = Column(Boolean, default=True)
 
 
-class JoinChatMessage(Base):
-    __tablename__ = 'join_chat'
+class ChatMessage(Base):
+    __tablename__ = 'chat_message'
     id = Column(Integer, primary_key=True, nullable=False)
     text_type = Column(String, nullable=False)
     content_type = Column(String, nullable=False, default="text")
