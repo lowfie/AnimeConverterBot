@@ -17,7 +17,7 @@ DATABASE_POSTGRES = env.str("DATABASE_POSTGRES")
 START_FILE_ID = env.str("START_FILE_ID")
 
 # chat to forward photo user
-FORWARD_USER = -50135915
+FORWARD_CHAT_ID = None
 
 # admin list
 ADMINS = [813415126, 5773913054]
