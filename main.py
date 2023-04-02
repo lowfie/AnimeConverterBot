@@ -1,22 +1,15 @@
 from aiogram import executor
+from loguru import logger
 
 from bot.base import dp
+from bot.register import register_bot_handlers
+from database.base import create_tables_if_not_exist
 
 
 async def on_startup(dispatcher):
-    from database.base import create_database_if_not_exists
-    await create_database_if_not_exists()
-    from bot.handler import (
-        start,
-        stats,
-        shout,
-        converter,
-        chat_join,
-        subscriber,
-        bot_blocked,
-        cancel_state
-    )
-    print("bot was started")
+    await create_tables_if_not_exist()
+    await register_bot_handlers(dispatcher)
+    logger.info("bot was started")
 
 
 async def on_shutdown(dispatcher):
