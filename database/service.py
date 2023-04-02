@@ -54,3 +54,15 @@ async def select_join_chat_message(text_type: str):
     )).first()
     return join_chat_message
 
+
+async def set_life_user(life_status: bool, tg_id):
+    session.execute(
+        update(User)
+        .values(is_life=life_status)
+        .where(User.tg_id.__eq__(tg_id))
+    )
+    session.commit()
+    if life_status:
+        logger.info(f"Пользователь с ID {tg_id} разблокировал бота")
+    else:
+        logger.info(f"Пользователь с ID {tg_id} заблокировал бота")
