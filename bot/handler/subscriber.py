@@ -3,12 +3,10 @@ from sqlalchemy import delete, select
 
 from bot.base import bot, dp
 from bot.utils import anti_flood
-from bot.filter.admin import IsAdmin
 from database.base import session
 from database.models import Subscribe
 
 
-@dp.message_handler(IsAdmin(), commands="add_sub")
 @dp.throttled(anti_flood, rate=1)
 async def add_subscribe(message: types.Message):
     if len(message.text.split()) == 4:
@@ -26,7 +24,6 @@ async def add_subscribe(message: types.Message):
     session.commit()
 
 
-@dp.message_handler(IsAdmin(), commands="remove_sub")
 @dp.throttled(anti_flood, rate=1)
 async def remove_subscribe(message: types.Message):
     if len(message.text.split()) == 2:
@@ -41,7 +38,6 @@ async def remove_subscribe(message: types.Message):
     session.commit()
 
 
-@dp.message_handler(IsAdmin(), commands="subs")
 @dp.throttled(anti_flood, rate=1)
 async def get_all_subscriber(message: types.Message):
     subs = (session.execute(select(Subscribe.title, Subscribe.chat_id, Subscribe.invited_link))).all()

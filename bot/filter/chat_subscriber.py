@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
 from sqlalchemy import select
+from loguru import logger
 
 from bot.base import bot
 from database.base import session
@@ -19,7 +20,7 @@ class IsSubscriber(Filter):
             try:
                 chat_member = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
             except Exception as _ex:
-                print("WARNING:", _ex)
+                logger.warning(_ex)
                 return
 
             if chat_member.status == types.ChatMemberStatus.LEFT:

@@ -3,12 +3,10 @@ from sqlalchemy import select, func
 
 from bot.base import bot, dp
 from bot.utils import anti_flood
-from bot.filter.admin import IsAdmin
 from database.base import session
 from database.models import User
 
 
-@dp.message_handler(IsAdmin(), commands="stats")
 @dp.throttled(anti_flood, rate=1)
 async def stats_of_users(message: types.Message):
     life_users = (session.execute(select(func.count(User.id)).where(User.is_life.__eq__(True)))).scalar()

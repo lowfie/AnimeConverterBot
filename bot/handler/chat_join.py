@@ -5,8 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from datetime import datetime, timedelta
 
-from bot.base import dp, bot
-from bot.filter.admin import IsAdmin
+from bot.base import bot
 from bot.utils import send_message_media_types
 from database.service import (
     init_join_chat_message,
@@ -16,29 +15,26 @@ from database.service import (
 )
 
 
-class Form(StatesGroup):
+class FormJoinMessage(StatesGroup):
     message = State()
 
 
-@dp.message_handler(IsAdmin(), commands=["text_join_chat", "tjc"])
-async def cmd_text_a(message: types.Message, state: FSMContext = None):
+async def text_join_to_chat(message: types.Message, state: FSMContext = None):
     await init_join_chat_message("join_chat")
-    await Form.message.set()
+    await FormJoinMessage.message.set()
     async with state.proxy() as data:
         data["text_type"] = "join_chat"
     await message.reply("Отправь сообщение уведомления при входе в группу (с медиафайлом)")
 
 
-@dp.message_handler(IsAdmin(), commands=["text_after_join", "taj"])
-async def cmd_text_b(message: types.Message, state: FSMContext = None):
+async def text_after_join_chat(message: types.Message, state: FSMContext = None):
     await init_join_chat_message("after_join")
-    await Form.message.set()
+    await FormJoinMessage.message.set()
     async with state.proxy() as data:
         data["text_type"] = "after_join"
     await message.reply("Отправь сообщение уведомления при входе после 15 минут (с медиафайлом)")
 
 
-@dp.message_handler(content_types=["text", "photo", "video", "animation"], state=Form.message)
 async def process_message(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         if message.content_type == "text":
@@ -73,7 +69,6 @@ async def process_message(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.chat_join_request_handler()
 async def approve_member(chat_join: types.ChatJoinRequest):
     join_msg_content_type, join_msg_text, join_msg_file_id = await select_join_chat_message("join_chat")
     after_msg_content_type, after_msg_text, after_msg_file_id = await select_join_chat_message("after_join")

@@ -3,10 +3,9 @@ from aiogram import types
 from bot.base import bot, dp
 from bot.utils import anti_flood
 from database.service import add_user
-from config import START_FILE_ID
+from settings.config import START_FILE_ID
 
 
-@dp.message_handler(commands="start")
 @dp.throttled(anti_flood, rate=1)
 async def start(message: types.Message):
     await add_user(message.from_user.id)
