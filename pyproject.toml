@@ -11,6 +11,8 @@ aiogram = "^2.25.1"
 requests = "^2.28.2"
 environs = "^9.5.0"
 sqlalchemy = "1.4.47"
+psycopg2-binary = "^2.9.5"
+loguru = "^0.6.0"
 
 
 [build-system]
