@@ -3,7 +3,7 @@ import requests
 from loguru import logger
 
 from aiogram import types, Bot
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotBlocked, CantInitiateConversation
 
 from database.service import set_life_user
 
@@ -46,7 +46,7 @@ async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: s
                 parse_mode="HTML",
                 reply_markup=types.ReplyKeyboardRemove()
             )
-    except BotBlocked:
+    except (BotBlocked, CantInitiateConversation):
         await set_life_user(life_status=False, tg_id=chat_id)
         logger.warning(f"Пользователь с ID {chat_id} заблокировал бота")
 
