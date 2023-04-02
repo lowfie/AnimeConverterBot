@@ -9,15 +9,15 @@ from bot.filter.chat_subscriber import IsSubscriber
 async def register_bot_handlers(dispatcher: Dispatcher):
     from bot.handler.start import start
     from bot.handler.stats import stats_of_users
-    from bot.handler.converter import send_anime_photo
     from bot.handler.cancel_state import cancel_handler
     from bot.handler.bot_blocked import user_blocked_bot
     from bot.handler.shout import cmd_shout, process_text, process_media, FormShout
     from bot.handler.subscriber import add_subscribe, remove_subscribe, get_all_subscriber
+    from bot.handler.converter import send_anime_photo, text_after_photo, process_media_after_photo, FormAfterPhoto
     from bot.handler.chat_join import (
         text_join_to_chat,
         text_after_join_chat,
-        process_message,
+        process_media_join_chat,
         approve_member,
         FormJoinMessage
     )
@@ -46,12 +46,19 @@ async def register_bot_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(text_join_to_chat, IsAdmin(), commands=["text_join_chat", "tjc"])
     dispatcher.register_message_handler(text_after_join_chat, IsAdmin(), commands=["text_after_join", "taj"])
     dispatcher.register_message_handler(
-        process_message,
+        process_media_join_chat,
         content_types=["text", "photo", "video", "animation"],
         state=FormJoinMessage.message
     )
 
+    dispatcher.register_message_handler(text_after_photo, IsAdmin(), commands=["text_after_photo", "tap"])
+    dispatcher.register_message_handler(
+        process_media_after_photo,
+        content_types=["text", "photo", "video", "animation"],
+        state=FormAfterPhoto.message
+    )
     dispatcher.register_chat_join_request_handler(approve_member)
+
     dispatcher.register_my_chat_member_handler(user_blocked_bot)
 
 
