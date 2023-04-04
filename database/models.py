@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, BigInteger
+from sqlalchemy import Column, Integer, String, Boolean, BigInteger, Text
 
 
 Base = declarative_base()
@@ -27,4 +27,7 @@ class ChatMessage(Base):
     content_type = Column(String, nullable=False, default="text")
     text = Column(String, nullable=False, default="Some Text")
     file_id = Column(String, nullable=True)
+    button_text = Column(Text, nullable=True)
+    button_url = Column(Text, nullable=True)
+
 
