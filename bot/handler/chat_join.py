@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 from bot.base import bot
 from bot.utils import send_message_media_types, validation_button
+from bot.keyboards.reply.cancel_state import cancel
 from database.service import (
     init_chat_message,
     update_chat_message,
@@ -23,17 +24,19 @@ class FormJoinMessage(StatesGroup):
 async def text_join_to_chat(message: types.Message, state: FSMContext = None):
     await init_chat_message("join_chat")
     await FormJoinMessage.button.set()
+    markup = await cancel()
     async with state.proxy() as data:
         data["text_type"] = "join_chat"
-    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления", reply_markup=markup)
 
 
 async def text_after_join_chat(message: types.Message, state: FSMContext = None):
     await init_chat_message("after_join")
     await FormJoinMessage.button.set()
+    markup = await cancel()
     async with state.proxy() as data:
         data["text_type"] = "after_join"
-    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления", reply_markup=markup)
 
 
 async def process_join_chat_pin_button(message: types.Message, state: FSMContext):

@@ -5,6 +5,7 @@ from sqlalchemy import select
 
 from bot.base import bot
 from bot.utils import send_message_media_types, validation_button
+from bot.keyboards.reply.cancel_state import cancel
 from database.base import session
 from database.models import User
 
@@ -19,8 +20,7 @@ class FormShout(StatesGroup):
 
 async def cmd_shout(message: types.Message):
     await FormShout.text.set()
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Вернуться к боту")
+    markup = await cancel()
     await message.reply("Отправь текст рассылки", reply_markup=markup)
 
 

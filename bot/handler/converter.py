@@ -11,6 +11,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from bot.base import dp, bot
 from bot.utils import anti_flood, get_ai_image, send_message_media_types, validation_button
+from bot.keyboards.reply.cancel_state import cancel
 from settings.config import TOKEN, FORWARD_CHAT_ID
 from database.service import (
     init_chat_message,
@@ -27,9 +28,10 @@ class FormAfterPhoto(StatesGroup):
 async def text_after_photo(message: types.Message, state: FSMContext = None):
     await init_chat_message("after_photo")
     await FormAfterPhoto.button.set()
+    markup = await cancel()
     async with state.proxy() as data:
         data["text_type"] = "after_photo"
-    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления", reply_markup=markup)
 
 
 async def process_pin_button(message: types.Message, state: FSMContext):
