@@ -10,8 +10,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 from bot.base import dp, bot
-from bot.utils import anti_flood, get_ai_image
-from bot.utils import send_message_media_types
+from bot.utils import anti_flood, get_ai_image, send_message_media_types, validation_button
 from settings.config import TOKEN, FORWARD_CHAT_ID
 from database.service import (
     init_chat_message,
@@ -34,15 +33,13 @@ async def text_after_photo(message: types.Message, state: FSMContext = None):
 
 
 async def process_pin_button(message: types.Message, state: FSMContext):
+    button = validation_button(message)
     async with state.proxy() as data:
-        if len(message.text.split()) == 2 and "/" in message.text.split()[1]:
-            data["btn_text"], data["btn_url"] = message.text.split()[0], message.text.split()[1]
-            await message.answer("Кнопка была добавлена")
-        else:
-            data["btn_text"], data["btn_url"] = None, None
-            await message.answer("Кнопка не была добавлена")
-    await message.reply("Отправь сообщение уведомления после отправки ботом фото (с медиафайлом)")
+        data["btn_text"], data["btn_url"] = button
+    await message.answer("Кнопка не была добавлена" if None in button else "Кнопка была добавлена")
+
     await FormAfterPhoto.next()
+    await message.reply("Отправь сообщение уведомления после отправки ботом фото (с медиафайлом)")
 
 
 async def process_media_after_photo(message: types.Message, state: FSMContext):
