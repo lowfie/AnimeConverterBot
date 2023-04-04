@@ -57,7 +57,9 @@ async def select_chat_message(text_type: str):
         select(
             ChatMessage.content_type,
             ChatMessage.text,
-            ChatMessage.file_id
+            ChatMessage.file_id,
+            ChatMessage.button_text,
+            ChatMessage.button_url
         )
         .where(ChatMessage.text_type.__eq__(text_type))
     )).first()
