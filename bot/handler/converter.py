@@ -35,7 +35,7 @@ async def text_after_photo(message: types.Message, state: FSMContext = None):
 
 async def process_pin_button(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        if len(message.text.split()) == 2:
+        if len(message.text.split()) == 2 and "/" in message.text.split()[1]:
             data["btn_text"], data["btn_url"] = message.text.split()[0], message.text.split()[1]
             await message.answer("Кнопка была добавлена")
         else:
@@ -125,17 +125,20 @@ async def send_anime_photo(message: types.Message):
         ai_image = get_ai_image(base64_image_string)["media_info_list"][0]["media_data"]
         await bot.send_photo(message.from_user.id, ai_image, caption=f"@{tag}")
 
-        after_photo_content_type, after_photo_text, after_photo_file_id = await select_chat_message("after_photo")
+        content_type, text, file_id, button_text, button_url = await select_chat_message("after_photo")
+
         send_date = datetime.now() + timedelta(seconds=10)
         while datetime.now() <= send_date:
             await asyncio.sleep(1)
             if datetime.now() >= send_date:
                 await send_message_media_types(
                     bot=bot,
-                    content_type=after_photo_content_type,
+                    content_type=content_type,
                     chat_id=message.from_user.id,
-                    text=after_photo_text,
-                    file_id=after_photo_file_id
+                    text=text,
+                    file_id=file_id,
+                    button_text=button_text,
+                    button_url=button_url
                 )
                 break
     except Exception as _ex:
