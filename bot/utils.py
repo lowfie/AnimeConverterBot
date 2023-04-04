@@ -2,6 +2,7 @@ import json
 import requests
 
 from aiogram import types, Bot
+from loguru import logger
 
 from database.service import set_life_user
 
@@ -11,14 +12,26 @@ async def anti_flood(*args, **kwargs):
     await message.answer("Не флуди, я тебя с первого раза понял!")
 
 
-async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: str, file_id: str = None):
+async def send_message_media_types(
+        bot: Bot,
+        content_type: str,
+        chat_id, text: str,
+        file_id: str = None,
+        button_text: str = None,
+        button_url: str = None
+):
+    if button_text and button_url:
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text=button_text, url=button_url))
+    else:
+        keyboard = types.ReplyKeyboardRemove()
     try:
         if content_type == "text":
             await bot.send_message(
                 chat_id,
                 text=text,
                 parse_mode="HTML",
-                reply_markup=types.ReplyKeyboardRemove()
+                reply_markup=keyboard
             )
         elif content_type == "photo":
             await bot.send_photo(
@@ -26,7 +39,7 @@ async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: s
                 photo=file_id,
                 caption=text,
                 parse_mode="HTML",
-                reply_markup=types.ReplyKeyboardRemove()
+                reply_markup=keyboard
             )
         elif content_type == "video":
             await bot.send_video(
@@ -34,7 +47,7 @@ async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: s
                 video=file_id,
                 caption=text,
                 parse_mode="HTML",
-                reply_markup=types.ReplyKeyboardRemove()
+                reply_markup=keyboard
             )
         elif content_type == "animation":
             await bot.send_animation(
@@ -42,10 +55,12 @@ async def send_message_media_types(bot: Bot, content_type: str, chat_id, text: s
                 animation=file_id,
                 caption=text,
                 parse_mode="HTML",
-                reply_markup=types.ReplyKeyboardRemove()
+                reply_markup=keyboard
             )
-    except:
+    except Exception as _ex:
+        logger.warning("Ошибка отправки сообщения", _ex)
         await set_life_user(life_status=False, tg_id=chat_id)
+
 
 def get_ai_image(base64_image_string):
     headers = {
