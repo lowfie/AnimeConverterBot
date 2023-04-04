@@ -62,6 +62,12 @@ async def send_message_media_types(
         await set_life_user(life_status=False, tg_id=chat_id)
 
 
+def validation_button(message: types.Message):
+    if len(message.text.split()) == 2 and "/" in message.text.split()[1]:
+        return message.text.split()[0], message.text.split()[1]
+    return None, None
+
+
 def get_ai_image(base64_image_string):
     headers = {
         "Connection": "keep-alive",
