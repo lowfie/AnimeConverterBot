@@ -21,15 +21,28 @@ from database.service import (
 
 
 class FormAfterPhoto(StatesGroup):
+    button = State()
     message = State()
 
 
 async def text_after_photo(message: types.Message, state: FSMContext = None):
     await init_chat_message("after_photo")
-    await FormAfterPhoto.message.set()
+    await FormAfterPhoto.button.set()
     async with state.proxy() as data:
         data["text_type"] = "after_photo"
+    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+
+
+async def process_pin_button(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        if len(message.text.split()) == 2:
+            data["btn_text"], data["btn_url"] = message.text.split()[0], message.text.split()[1]
+            await message.answer("Кнопка была добавлена")
+        else:
+            data["btn_text"], data["btn_url"] = None, None
+            await message.answer("Кнопка не была добавлена")
     await message.reply("Отправь сообщение уведомления после отправки ботом фото (с медиафайлом)")
+    await FormAfterPhoto.next()
 
 
 async def process_media_after_photo(message: types.Message, state: FSMContext):
@@ -39,28 +52,36 @@ async def process_media_after_photo(message: types.Message, state: FSMContext):
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
-                file_id=None
+                file_id=None,
+                button_text=data["btn_text"],
+                button_url=data["btn_url"]
             )
         elif message.content_type == "photo":
             await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
-                file_id=message.photo[0].file_id
+                file_id=message.photo[0].file_id,
+                button_text=data["btn_text"],
+                button_url=data["btn_url"]
             )
         elif message.content_type == "video":
             await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
-                file_id=message.video.file_id
+                file_id=message.video.file_id,
+                button_text=data["btn_text"],
+                button_url=data["btn_url"]
             )
         elif message.content_type == "animation":
             await update_chat_message(
                 text_type=data["text_type"],
                 content_type=message.content_type,
                 text=message.parse_entities(),
-                file_id=message.animation.file_id
+                file_id=message.animation.file_id,
+                button_text=data["btn_text"],
+                button_url=data["btn_url"]
             )
     await message.reply("Данные были обновлены")
     await state.finish()
