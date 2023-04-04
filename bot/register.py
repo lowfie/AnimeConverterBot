@@ -11,7 +11,7 @@ async def register_bot_handlers(dispatcher: Dispatcher):
     from bot.handler.stats import stats_of_users
     from bot.handler.cancel_state import cancel_handler
     from bot.handler.bot_blocked import user_blocked_bot
-    from bot.handler.shout import cmd_shout, process_text, process_media, FormShout
+    from bot.handler.shout import cmd_shout, process_text, process_media, FormShout, process_pin_button_to_shout
     from bot.handler.subscriber import add_subscribe, remove_subscribe, get_all_subscriber
     from bot.handler.converter import (
         text_after_photo,
@@ -50,6 +50,7 @@ async def register_bot_handlers(dispatcher: Dispatcher):
     # mailing to all users /shout command
     dispatcher.register_message_handler(cmd_shout, IsAdmin(), commands="shout")
     dispatcher.register_message_handler(process_text, content_types=["text"], state=FormShout.text)
+    dispatcher.register_message_handler(process_pin_button_to_shout, content_types=["text"], state=FormShout.button)
     dispatcher.register_message_handler(
         process_media,
         content_types=["photo", "video", "animation"],
