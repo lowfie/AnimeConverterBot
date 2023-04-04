@@ -5,32 +5,36 @@ from bot.filter.admin import IsAdmin
 from bot.filter.chat_subscriber import IsSubscriber
 
 
-# Подключение к апи телеграмм бота
+# register all handlers
 async def register_bot_handlers(dispatcher: Dispatcher):
     from bot.handler.start import start
+    from bot.handler.help import admin_help
     from bot.handler.stats import stats_of_users
     from bot.handler.cancel_state import cancel_handler
     from bot.handler.bot_blocked import user_blocked_bot
     from bot.handler.shout import cmd_shout, process_text, process_media, FormShout, process_pin_button_to_shout
     from bot.handler.subscriber import add_subscribe, remove_subscribe, get_all_subscriber
-    from bot.handler.converter import (
+    from bot.handler.convert_photo.message_after_photo import (
         text_after_photo,
         process_pin_button,
         process_media_after_photo,
-        FormAfterPhoto,
-        send_anime_photo
+        FormAfterPhoto
     )
-    from bot.handler.chat_join import (
+    from bot.handler.convert_photo.converter import send_anime_photo
+    from bot.handler.chat_join.text_join_chat import (
         text_join_to_chat,
         text_after_join_chat,
         process_media_join_chat,
-        approve_member,
         process_join_chat_pin_button,
         FormJoinMessage
     )
+    from bot.handler.chat_join.approve import approve_member
 
     # /start - starting bot
     dispatcher.register_message_handler(start, commands="start")
+
+    # /ahelp - all admin commands
+    dispatcher.register_message_handler(admin_help, IsAdmin(), commands="ahelp")
 
     # /stats - get stat of users life
     dispatcher.register_message_handler(stats_of_users, IsAdmin(), commands="stats")
@@ -85,9 +89,5 @@ async def register_bot_handlers(dispatcher: Dispatcher):
     )
     dispatcher.register_chat_join_request_handler(approve_member)
 
+    # handler user blocked bot
     dispatcher.register_my_chat_member_handler(user_blocked_bot)
-
-
-
-
-
