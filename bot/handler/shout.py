@@ -4,35 +4,42 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from sqlalchemy import select
 
 from bot.base import bot
-from bot.utils import send_message_media_types
+from bot.utils import send_message_media_types, validation_button
 from database.base import session
 from database.models import User
-
 
 users = (session.execute(select(User.tg_id).where(User.is_life.__eq__(True)))).all()
 
 
 class FormShout(StatesGroup):
     text = State()
+    button = State()
     media = State()
 
 
 async def cmd_shout(message: types.Message):
     await FormShout.text.set()
-    await message.reply("Отправь текст рассылки")
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("Вернуться к боту")
+    await message.reply("Отправь текст рассылки", reply_markup=markup)
 
 
 async def process_text(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data["text"] = message.parse_entities()
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Вернуться к боту")
     await FormShout.next()
-    await message.reply(
-        "Отправьте медиафайл и дождитесь отправки",
-        reply_markup=markup
-    )
+    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+
+
+async def process_pin_button_to_shout(message: types.Message, state: FSMContext):
+    button = validation_button(message)
+    async with state.proxy() as data:
+        data["btn_text"], data["btn_url"] = button
+    await message.answer("Кнопка не была добавлена" if None in button else "Кнопка была добавлена")
+
+    await FormShout.next()
+    await message.reply("Отправьте медиафайл и дождитесь отправки")
 
 
 async def process_media(message: types.Message, state: FSMContext):
@@ -51,7 +58,9 @@ async def process_media(message: types.Message, state: FSMContext):
                 content_type=message.content_type,
                 chat_id=chat,
                 text=data["text"],
-                file_id=file_id
+                file_id=file_id,
+                button_text=data["btn_text"],
+                button_url=data["btn_url"]
             )
 
     await bot.send_message(message.from_user.id, "Все сообщения были успешно отправлены")
