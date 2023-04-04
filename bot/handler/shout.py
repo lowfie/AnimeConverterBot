@@ -23,26 +23,26 @@ async def cmd_shout(message: types.Message):
 
 
 async def process_text(message: types.Message, state: FSMContext):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Вернуться к боту")
-
     async with state.proxy() as data:
         data["text"] = message.parse_entities()
-        await FormShout.next()
-        await message.reply(
-            "Отправьте медиафайл и дождитесь отправки",
-            reply_markup=markup
-        )
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("Вернуться к боту")
+    await FormShout.next()
+    await message.reply(
+        "Отправьте медиафайл и дождитесь отправки",
+        reply_markup=markup
+    )
 
 
 async def process_media(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         if message.content_type == "photo":
-            file_id=message.photo[0].file_id
+            file_id = message.photo[0].file_id
         elif message.content_type == "video":
-            file_id=message.video.file_id
+            file_id = message.video.file_id
         elif message.content_type == "animation":
-            file_id=message.animation.file_id
+            file_id = message.animation.file_id
 
         for user_id in users:
             chat = user_id[0]
