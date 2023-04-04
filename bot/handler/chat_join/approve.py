@@ -2,6 +2,7 @@ import asyncio
 
 from aiogram import types
 from datetime import datetime, timedelta
+from loguru import logger
 
 from bot.base import bot
 from bot.utils import send_message_media_types
@@ -22,7 +23,10 @@ async def approve_member(chat_join: types.ChatJoinRequest):
         button_text=join_btn_text,
         button_url=join_btn_url
     )
-    await chat_join.approve()
+    try:
+        await chat_join.approve()
+    except Exception as _ex:
+        logger.info("Пользователь уже добавлен в чат", _ex)
 
     send_date = datetime.now() + timedelta(minutes=15)
     while datetime.now() <= send_date:
