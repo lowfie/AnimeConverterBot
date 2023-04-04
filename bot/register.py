@@ -25,6 +25,7 @@ async def register_bot_handlers(dispatcher: Dispatcher):
         text_after_join_chat,
         process_media_join_chat,
         approve_member,
+        process_join_chat_pin_button,
         FormJoinMessage
     )
 
@@ -58,6 +59,11 @@ async def register_bot_handlers(dispatcher: Dispatcher):
     # /text_join_chat , /text_after_chat command
     dispatcher.register_message_handler(text_join_to_chat, IsAdmin(), commands=["text_join_chat", "tjc"])
     dispatcher.register_message_handler(text_after_join_chat, IsAdmin(), commands=["text_after_join", "taj"])
+    dispatcher.register_message_handler(
+        process_join_chat_pin_button,
+        content_types=["text"],
+        state=FormJoinMessage.button
+    )
     dispatcher.register_message_handler(
         process_media_join_chat,
         content_types=["text", "photo", "video", "animation"],
