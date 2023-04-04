@@ -21,7 +21,14 @@ class FormShout(StatesGroup):
 async def cmd_shout(message: types.Message):
     await FormShout.text.set()
     markup = await cancel()
-    await message.reply("Отправь текст рассылки", reply_markup=markup)
+    await message.reply(
+        "<b>Рассылка</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "<code>— Отправьте текст рассылки</code>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+        reply_markup=markup,
+        parse_mode="HTML"
+    )
 
 
 async def process_text(message: types.Message, state: FSMContext):
@@ -29,17 +36,29 @@ async def process_text(message: types.Message, state: FSMContext):
         data["text"] = message.parse_entities()
 
     await FormShout.next()
-    await message.reply("Введите через пробел сначала текст, после ссылку кнопки для добавления")
+    await message.reply(
+        "<b>Рассылка</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "<code>— Отправьте через пробел текст и ссылку кнопки</code>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+        parse_mode="HTML"
+    )
 
 
 async def process_pin_button_to_shout(message: types.Message, state: FSMContext):
     button = validation_button(message)
     async with state.proxy() as data:
         data["btn_text"], data["btn_url"] = button
-    await message.answer("Кнопка не была добавлена" if None in button else "Кнопка была добавлена")
+    await message.answer("❗️Кнопка не была добавлена" if None in button else "❗️Кнопка была добавлена")
 
     await FormShout.next()
-    await message.reply("Отправьте медиафайл и дождитесь отправки")
+    await message.reply(
+        "<b>Рассылка</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "<code>— Отправьте медиафайл</code>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+        parse_mode="HTML"
+    )
 
 
 async def process_media(message: types.Message, state: FSMContext):
@@ -63,5 +82,5 @@ async def process_media(message: types.Message, state: FSMContext):
                 button_url=data["btn_url"]
             )
 
-    await bot.send_message(message.from_user.id, "Все сообщения были успешно отправлены")
+    await bot.send_message(message.from_user.id, "❗️Все сообщения были успешно отправлены")
     await state.finish()
