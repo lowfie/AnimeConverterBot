@@ -20,9 +20,9 @@ async def add_user(tg_id):
 
 async def init_chat_message(text_type: str):
     is_text_type = (session.execute(
-            select(ChatMessage.text_type)
-            .where(ChatMessage.text_type.__eq__(text_type))
-        )).first()
+        select(ChatMessage.text_type)
+        .where(ChatMessage.text_type.__eq__(text_type))
+    )).first()
 
     if not is_text_type:
         join_chat = ChatMessage(text_type=text_type)
@@ -30,13 +30,22 @@ async def init_chat_message(text_type: str):
         session.commit()
 
 
-async def update_chat_message(text_type: str, content_type: str, text: str, file_id):
+async def update_chat_message(
+        text_type: str,
+        content_type: str,
+        text: str,
+        file_id,
+        button_text: str = None,
+        button_url: str = None
+):
     session.execute(
         update(ChatMessage)
         .values(
             content_type=content_type,
             text=text,
-            file_id=file_id
+            file_id=file_id,
+            button_text=button_text,
+            button_url=button_url
         )
         .where(ChatMessage.text_type.__eq__(text_type))
     )
