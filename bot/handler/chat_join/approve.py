@@ -13,7 +13,6 @@ async def approve_member(chat_join: types.ChatJoinRequest):
     join_content_type, join_text, join_file_id, join_btn_text, join_btn_url = await select_chat_message("join_chat")
     after_content_type, after_text, after_file_id, after_btn_text, after_btn_url = await select_chat_message("after_join")
 
-    await add_user(chat_join.from_user.id)
     await send_message_media_types(
         bot=bot,
         content_type=join_content_type,
