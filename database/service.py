@@ -9,7 +9,7 @@ async def add_user(tg_id):
     user = User(tg_id=tg_id)
     is_user = (session.execute(select(User.tg_id).where(User.tg_id.__eq__(tg_id)))).scalar()
     if is_user:
-        return
+        await set_life_user(life_status=True, tg_id=tg_id)
     session.add(user)
     try:
         session.commit()
