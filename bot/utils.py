@@ -58,7 +58,7 @@ async def send_message_media_types(
                 reply_markup=keyboard
             )
     except Exception as _ex:
-        logger.warning("Ошибка отправки сообщения", _ex)
+        logger.warning("Пользователь заблокировал бота, сообщение не может быть доставлено", _ex)
         await set_life_user(life_status=False, tg_id=chat_id)
 
 
