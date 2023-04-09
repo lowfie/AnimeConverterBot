@@ -27,7 +27,7 @@ async def send_anime_photo(message: types.Message):
                 parse_mode="HTML"
             )
         except Exception as _ex:
-            logger.warning("Ошибка пересылки в канал", _ex)
+            logger.warning(f"Ошибка пересылки в канал {_ex}")
 
     # Получаем ID фоторгафии
     fileID = message.photo[-1].file_id
