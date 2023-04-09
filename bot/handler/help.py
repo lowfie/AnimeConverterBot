@@ -13,7 +13,10 @@ async def admin_help(message: types.Message):
              "<code>/taj /text_after_join</code> - <b>уведомление через 15 минут после входа в канал</b>\n"
              "<code>/tap /text_after_photo</code> - <b>уведомление после обработки фото</b>\n"
              "<code>/shout</code> - <b>рассылка сообщения</b>\n"
-             "<code>/stats</code> - <b>статистика активных пользователей</b>\n",
+             "<code>/stats</code> - <b>статистика активных пользователей</b>\n"             "<code>/shout</code> - <b>рассылка сообщения</b>\n"
+             "<code>/subs</code> - <b>просмотр спонсоров</b>\n"
+             "<code>/add_sub</code> - <b>добавление спонсоров</b>\n"
+             "<code>/remove_sub</code> - <b>удаление спонсоров</b>\n",
         parse_mode="HTML",
         reply_markup=types.ReplyKeyboardRemove()
     )
