@@ -6,7 +6,7 @@ from loguru import logger
 
 from bot.base import bot
 from bot.utils import send_message_media_types
-from database.service import select_chat_message, add_user
+from database.service import select_chat_message
 
 
 async def approve_member(chat_join: types.ChatJoinRequest):
@@ -27,7 +27,7 @@ async def approve_member(chat_join: types.ChatJoinRequest):
     except Exception as _ex:
         logger.info("Пользователь уже добавлен в чат", _ex)
 
-    send_date = datetime.now() + timedelta(minutes=15)
+    send_date = datetime.now() + timedelta(minutes=1)
     while datetime.now() <= send_date:
         await asyncio.sleep(1)
         if datetime.now() >= send_date:
