@@ -10,12 +10,13 @@ async def add_user(tg_id):
     is_user = (session.execute(select(User.tg_id).where(User.tg_id.__eq__(tg_id)))).scalar()
     if is_user:
         await set_life_user(life_status=True, tg_id=tg_id)
-    session.add(user)
-    try:
-        session.commit()
-    except Exception as err:
-        logger.warning("Ошибка добавления пользователей", err)
-        session.rollback()
+    else:
+        session.add(user)
+        try:
+            session.commit()
+        except Exception as err:
+            logger.warning(f"Ошибка добавления пользователей: {err}")
+            session.rollback()
 
 
 async def init_chat_message(text_type: str):
